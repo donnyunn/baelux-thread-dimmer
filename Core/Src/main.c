@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
 #include "ipcc.h"
 #include "usart.h"
@@ -127,6 +128,7 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
+  MX_ADC1_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 

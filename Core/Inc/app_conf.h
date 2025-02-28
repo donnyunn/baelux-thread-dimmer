@@ -193,6 +193,7 @@ typedef enum
 {
   CFG_TIM_PROC_ID_ISR,
   /* USER CODE BEGIN CFG_TimProcID_t */
+  CFG_TIM_USER_ID_ISR,
 
   /* USER CODE END CFG_TimProcID_t */
 } CFG_TimProcID_t;
@@ -305,6 +306,7 @@ typedef enum
   CFG_TASK_SW3,
   CFG_TASK_ENCODER_DOWN,
   CFG_TASK_ENCODER_UP,
+  CFG_TASK_BATTERY_CHECK,
 
   /* USER CODE END CFG_IdleTask_Id_t */
   CFG_TASK_NBR  /**< Shall be last in the list */
@@ -319,6 +321,7 @@ typedef enum
 #define TASK_SW3      (1U << CFG_TASK_SW3)
 #define TASK_ENCODER_DOWN  (1U << CFG_TASK_ENCODER_DOWN)
 #define TASK_ENCODER_UP  (1U << CFG_TASK_ENCODER_UP)
+#define TASK_BATTERY_CHECK  (1U << CFG_TASK_BATTERY_CHECK)
 
 /* USER CODE END DEFINE_TASK */
 

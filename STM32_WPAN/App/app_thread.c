@@ -217,6 +217,10 @@ void APP_THREAD_Init( void )
   // SHCI_C2_DEBUG_Init(&DebugCmdPacket);
 
   WorkInit(NULL);
+
+  LED_OFF(1);
+  LED_OFF(2);
+  LED_OFF(3);
   /* USER CODE END APP_THREAD_INIT_2 */
 }
 

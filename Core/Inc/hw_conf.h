@@ -160,7 +160,7 @@
  * HW UART
  *****************************************************************************/
 #define CFG_HW_LPUART1_ENABLED           1
-#define CFG_HW_LPUART1_DMA_TX_SUPPORTED  0
+#define CFG_HW_LPUART1_DMA_TX_SUPPORTED  1
 
 #define CFG_HW_USART1_ENABLED           1
 #define CFG_HW_USART1_DMA_TX_SUPPORTED  0
@@ -198,6 +198,16 @@
 #define CFG_HW_LPUART1_RX_PULL                 GPIO_NOPULL
 #define CFG_HW_LPUART1_RX_SPEED                GPIO_SPEED_FREQ_VERY_HIGH
 #define CFG_HW_LPUART1_RX_ALTERNATE            GPIO_AF8_LPUART1
+
+#define CFG_HW_LPUART1_DMA_TX_PREEMPTPRIORITY  0x0F
+#define CFG_HW_LPUART1_DMA_TX_SUBPRIORITY      0
+
+#define CFG_HW_LPUART1_DMAMUX_CLK_ENABLE       __HAL_RCC_DMAMUX1_CLK_ENABLE
+#define CFG_HW_LPUART1_DMA_CLK_ENABLE          __HAL_RCC_DMA1_CLK_ENABLE
+#define CFG_HW_LPUART1_TX_DMA_REQ              DMA_REQUEST_LPUART1_TX
+#define CFG_HW_LPUART1_TX_DMA_CHANNEL          DMA1_Channel4
+#define CFG_HW_LPUART1_TX_DMA_IRQn             DMA1_Channel4_IRQn
+#define CFG_HW_LPUART1_DMA_TX_IRQHandler       DMA1_Channel4_IRQHandler
 
 /**
  * UART1

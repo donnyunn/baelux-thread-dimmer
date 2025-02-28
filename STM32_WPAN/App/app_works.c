@@ -16,6 +16,8 @@
 #include "shci.h"
 #include "app_status.h"
 
+#include "adc.h"
+
 #define GROUP_ID 1
 
 typedef struct
@@ -35,6 +37,14 @@ typedef struct
 GroupJoinRequest joinRequest;
 uint8_t switchId[8];
 bool changingParent = false;
+
+uint8_t led_timer_id;
+void led_timer(void)
+{
+    LED_OFF(1);
+    LED_OFF(2);
+    LED_OFF(3);
+}
 
 // CoAP 리소스 초기화 함수 (필요한 경우 추가 요청 처리 가능)
 void InitCoap(otInstance *aInstance)
@@ -216,6 +226,37 @@ void SendGroupCommand(otInstance *aInstance, uint8_t groupId, uint8_t* command)
     SHCI_C2_RADIO_AllowLowPower(THREAD_IP,TRUE);
 }
 
+void WorkNightmodeCheck(uint8_t mode)
+{
+    switch (mode) {
+        case 1: // morning
+            LED_ON(1);
+        break;
+        case 2: // night
+            LED_ON(2);
+        break;
+    }
+    HW_TS_Start(led_timer_id, TIMER_INTERVAL_SEC(1));
+}
+
+void WorkBatteryCheck(void)
+{
+    uint32_t value;
+    uint32_t vout;
+
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    value = HAL_ADC_GetValue(&hadc1);
+    HAL_ADC_Stop(&hadc1);
+
+    vout = 4915200 / value;
+    APP_DBG("Battery: %dmV", vout);
+    if (vout < 2500) {
+        LED_ON(3);
+        HW_TS_Start(led_timer_id, TIMER_INTERVAL_SEC(1));
+    }
+}
+
 void WorkButtonCommand(otInstance *aInstance, button_e numButton)
 {
     uint8_t* status;
@@ -229,9 +270,12 @@ void WorkButtonCommand(otInstance *aInstance, button_e numButton)
         break;
         case BUTTON_MODE:
             status = StatusChange(STATUS_NIGHT, 0);
+            WorkNightmodeCheck(status[STATUS_NIGHT]);
+            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_0);
         break;
         case BUTTON_ONOFF:
             status = StatusChange(STATUS_POWER, 0);
+            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_0);
         break;
     }
     SendGroupCommand(aInstance, GROUP_ID, status);
@@ -331,4 +375,7 @@ void WorkInit(otInstance *aInstance)
     
     InitCoap(aInstance);
     StatusInit();
+
+    UTIL_SEQ_RegTask( TASK_BATTERY_CHECK, UTIL_SEQ_RFU, WorkBatteryCheck);
+    HW_TS_Create(CFG_TIM_USER_ID_ISR, &led_timer_id, hw_ts_SingleShot, led_timer);
 }
