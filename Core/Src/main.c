@@ -67,21 +67,24 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   switch (GPIO_Pin) {
     case SW1_Pin:
-      UTIL_SEQ_SetTask(TASK_SW1,CFG_SCH_PRIO_0);
+      UTIL_SEQ_SetTask(TASK_SW1, CFG_SCH_PRIO_0);
     break;
     case SW2_Pin:
-      UTIL_SEQ_SetTask(TASK_SW2,CFG_SCH_PRIO_0);
+      UTIL_SEQ_SetTask(TASK_SW2, CFG_SCH_PRIO_0);
     break;
     case SW3_Pin:
-      UTIL_SEQ_SetTask(TASK_SW3,CFG_SCH_PRIO_0);
+      UTIL_SEQ_SetTask(TASK_SW3, CFG_SCH_PRIO_0);
     break;
     case GPIO_PIN_8:
       if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) != GPIO_PIN_RESET) {
-        UTIL_SEQ_SetTask(TASK_ENCODER_DOWN,CFG_SCH_PRIO_0);
+        UTIL_SEQ_SetTask(TASK_ENCODER_DOWN, CFG_SCH_PRIO_0);
       } else {
-        UTIL_SEQ_SetTask(TASK_ENCODER_UP,CFG_SCH_PRIO_0);
+        UTIL_SEQ_SetTask(TASK_ENCODER_UP, CFG_SCH_PRIO_0);
       }
       
+    break;
+    case SENSE_Pin:
+      UTIL_SEQ_SetTask(TASK_WAKEUP_ENCODER, CFG_SCH_PRIO_0);
     break;
   }
 }

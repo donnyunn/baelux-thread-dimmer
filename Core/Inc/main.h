@@ -69,6 +69,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define SENSE_Pin GPIO_PIN_3
 #define SENSE_GPIO_Port GPIOC
+#define SENSE_EXTI_IRQn EXTI3_IRQn
 #define LATCH_Pin GPIO_PIN_2
 #define LATCH_GPIO_Port GPIOC
 #define SW3_Pin GPIO_PIN_4

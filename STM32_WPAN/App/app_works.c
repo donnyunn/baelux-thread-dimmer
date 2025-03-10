@@ -46,6 +46,13 @@ void led_timer(void)
     LED_OFF(3);
 }
 
+uint8_t sensor_sleep_timer_id;
+void sensor_sleep_timer(void)
+{
+    APP_DBG("off sensor");
+    HAL_GPIO_WritePin(LATCH_GPIO_Port, LATCH_Pin, GPIO_PIN_RESET);
+}
+
 // CoAP 리소스 초기화 함수 (필요한 경우 추가 요청 처리 가능)
 void InitCoap(otInstance *aInstance)
 {
@@ -239,22 +246,27 @@ void WorkNightmodeCheck(uint8_t mode)
     HW_TS_Start(led_timer_id, TIMER_INTERVAL_SEC(1));
 }
 
+uint16_t adc_values[1];
 void WorkBatteryCheck(void)
 {
-    uint32_t value;
-    uint32_t vout;
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_values, 1);
+}
 
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-    value = HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
-
-    vout = 4915200 / value;
-    APP_DBG("Battery: %dmV", vout);
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+    uint32_t vout = 4914000 / adc_values[0];
+    APP_DBG("Battery: %dmV (%d)", vout, adc_values[0]);
     if (vout < 2500) {
         LED_ON(3);
         HW_TS_Start(led_timer_id, TIMER_INTERVAL_SEC(1));
     }
+}
+
+void WorkWakeupEncoder(void)
+{
+    APP_DBG("wakeup sensor");
+    HAL_GPIO_WritePin(LATCH_GPIO_Port, LATCH_Pin, GPIO_PIN_SET);
+    HW_TS_Start(sensor_sleep_timer_id, TIMER_INTERVAL_SEC(2));
 }
 
 void WorkButtonCommand(otInstance *aInstance, button_e numButton)
@@ -271,11 +283,11 @@ void WorkButtonCommand(otInstance *aInstance, button_e numButton)
         case BUTTON_MODE:
             status = StatusChange(STATUS_NIGHT, 0);
             WorkNightmodeCheck(status[STATUS_NIGHT]);
-            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_0);
+            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_1);
         break;
         case BUTTON_ONOFF:
             status = StatusChange(STATUS_POWER, 0);
-            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_0);
+            UTIL_SEQ_SetTask(TASK_BATTERY_CHECK, CFG_SCH_PRIO_1);
         break;
     }
     SendGroupCommand(aInstance, GROUP_ID, status);
@@ -377,5 +389,9 @@ void WorkInit(otInstance *aInstance)
     StatusInit();
 
     UTIL_SEQ_RegTask( TASK_BATTERY_CHECK, UTIL_SEQ_RFU, WorkBatteryCheck);
+    UTIL_SEQ_RegTask( TASK_WAKEUP_ENCODER, UTIL_SEQ_RFU, WorkWakeupEncoder);
     HW_TS_Create(CFG_TIM_USER_ID_ISR, &led_timer_id, hw_ts_SingleShot, led_timer);
+    HW_TS_Create(CFG_TIM_USER_ID_ISR, &sensor_sleep_timer_id, hw_ts_SingleShot, sensor_sleep_timer);
+
+    HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 }
