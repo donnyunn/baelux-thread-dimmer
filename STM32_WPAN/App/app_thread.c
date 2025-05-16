@@ -99,6 +99,7 @@ extern void otAppCliInit(otInstance *aInstance);
 void APP_THREAD_SW1_Pressed(void);
 void APP_THREAD_SW2_Pressed(void);
 void APP_THREAD_SW3_Pressed(void);
+void APP_THREAD_SW4_Pressed(void);
 void APP_THREAD_Encoder_Down(void);
 void APP_THREAD_Encoder_Up(void);
 /* USER CODE END PFP */
@@ -181,6 +182,7 @@ void APP_THREAD_Init( void )
   UTIL_SEQ_RegTask( TASK_SW1, UTIL_SEQ_RFU, APP_THREAD_SW1_Pressed);
   UTIL_SEQ_RegTask( TASK_SW2, UTIL_SEQ_RFU, APP_THREAD_SW2_Pressed);
   UTIL_SEQ_RegTask( TASK_SW3, UTIL_SEQ_RFU, APP_THREAD_SW3_Pressed);
+  UTIL_SEQ_RegTask( TASK_SW4, UTIL_SEQ_RFU, APP_THREAD_SW4_Pressed);
   UTIL_SEQ_RegTask( TASK_ENCODER_DOWN, UTIL_SEQ_RFU, APP_THREAD_Encoder_Down);
   UTIL_SEQ_RegTask( TASK_ENCODER_UP, UTIL_SEQ_RFU, APP_THREAD_Encoder_Up);
 
@@ -919,11 +921,15 @@ void APP_THREAD_SW1_Pressed(void)
 }
 void APP_THREAD_SW2_Pressed(void)
 {
-  WorkChangeParent(NULL);
+  WorkChangeParent(NULL, PARENT_REQ_ATTACH);
 }
 void APP_THREAD_SW3_Pressed(void)
 {
   WorkButtonCommand(NULL, BUTTON_ONOFF);
+}
+void APP_THREAD_SW4_Pressed(void)
+{
+  WorkChangeParent(NULL, PARENT_REQ_DETACH);
 }
 void APP_THREAD_Encoder_Down(void)
 {

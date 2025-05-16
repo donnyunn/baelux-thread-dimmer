@@ -19,9 +19,15 @@ typedef enum {
     BUTTON_MODE,
 } button_e;
 
+typedef enum {
+    PARENT_REQ_NOTHING = 0,
+    PARENT_REQ_ATTACH,
+    PARENT_REQ_DETACH,
+} parent_req_e;
+
 void WorkButtonCommand(otInstance *aInstance, button_e numButton);
 void WorkBecameChild(otInstance *aInstance);
-void WorkChangeParent(otInstance *aInstance);
+void WorkChangeParent(otInstance *aInstance, parent_req_e req);
 void WorkPrintDeviceState(otInstance *aInstance);
 void WorkInit(otInstance *aInstance);
 

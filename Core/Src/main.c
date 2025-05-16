@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "i2c.h"
 #include "ipcc.h"
 #include "usart.h"
 #include "memorymap.h"
@@ -74,6 +75,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     break;
     case SW3_Pin:
       UTIL_SEQ_SetTask(TASK_SW3, CFG_SCH_PRIO_0);
+    break;
+    case SW4_Pin:
+      UTIL_SEQ_SetTask(TASK_SW4, CFG_SCH_PRIO_0);
     break;
     case GPIO_PIN_8:
       if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) != GPIO_PIN_RESET) {
@@ -132,6 +136,7 @@ int main(void)
   MX_RTC_Init();
   MX_USART1_UART_Init();
   MX_ADC1_Init();
+  MX_I2C1_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 

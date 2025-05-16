@@ -23,6 +23,7 @@
 typedef struct
 {
     uint8_t deviceType;
+    uint8_t deviceReq;
     uint8_t groupId;
     uint8_t uniqueId[8];
 } GroupJoinRequest;
@@ -37,6 +38,7 @@ typedef struct
 GroupJoinRequest joinRequest;
 uint8_t switchId[8];
 bool changingParent = false;
+static parent_req_e parent_req = PARENT_REQ_NOTHING;
 
 uint8_t led_timer_id;
 void led_timer(void)
@@ -139,6 +141,7 @@ void SendGroupJoinRequest(otInstance *aInstance)
     // GroupJoinRequest 데이터 채우기
     otLinkGetFactoryAssignedIeeeEui64(aInstance, &extAddr);
     joinRequest.deviceType = 1; // 1 = 스위치
+    joinRequest.deviceReq = parent_req; // 요청 사항 (attach or detach)
     joinRequest.groupId = GROUP_ID;    // 요청 그룹 ID
     memcpy(joinRequest.uniqueId, extAddr.m8, sizeof(extAddr.m8));
     memcpy(switchId, joinRequest.uniqueId, 8);
@@ -291,7 +294,7 @@ void WorkButtonCommand(otInstance *aInstance, button_e numButton)
         break;
     }
     SendGroupCommand(aInstance, GROUP_ID, status);
-    // APP_DBG("%x %x %x %x %x %x %x %x %x %x", status[0], status[1], status[2], status[3], status[4], status[5], status[6], status[7], status[8], status[9]);
+    APP_DBG("%x %x %x %x %x %x %x %x %x %x", status[0], status[1], status[2], status[3], status[4], status[5], status[6], status[7], status[8], status[9]);
 }
 
 void WorkBecameChild(otInstance *aInstance)
@@ -304,9 +307,10 @@ void WorkBecameChild(otInstance *aInstance)
     }
 }
 
-void WorkChangeParent(otInstance *aInstance)
+void WorkChangeParent(otInstance *aInstance, parent_req_e req)
 {
     otError error;
+    parent_req = req;
 
     error = otThreadSetEnabled(aInstance, false);
     if (error != OT_ERROR_NONE) {
