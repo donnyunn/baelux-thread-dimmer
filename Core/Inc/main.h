@@ -72,9 +72,6 @@ void Error_Handler(void);
 #define SENSE_EXTI_IRQn EXTI3_IRQn
 #define LATCH_Pin GPIO_PIN_2
 #define LATCH_GPIO_Port GPIOC
-#define INT_Pin GPIO_PIN_5
-#define INT_GPIO_Port GPIOB
-#define INT_EXTI_IRQn EXTI9_5_IRQn
 #define SW3_Pin GPIO_PIN_4
 #define SW3_GPIO_Port GPIOB
 #define SW3_EXTI_IRQn EXTI4_IRQn

@@ -38,6 +38,10 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#if (CFG_LPM_SUPPORTED == 1)
+#include "usart.h"
+#include "gpio.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -209,7 +213,21 @@ void MX_APPE_Init(void)
   HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
 /* USER CODE BEGIN APPE_Init_1 */
-#if (CFG_LPM_SUPPORTED == 0)
+#if (CFG_LPM_SUPPORTED == 1)
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  // HAL_UART_DeInit(&huart1);
+  // GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+  // GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  // GPIO_InitStruct.Pull = GPIO_NOPULL;
+  // HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  HAL_UART_DeInit(&hlpuart1);
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+#else
   Init_Debug();
 #endif
 
@@ -727,7 +745,6 @@ void ProcessTrace(void)
 void DbgOutputInit(void)
 {
 #ifdef CFG_DEBUG_TRACE_UART
-  MX_LPUART1_UART_Init();
   return;
 #endif /* CFG_DEBUG_TRACE_UART */
 }

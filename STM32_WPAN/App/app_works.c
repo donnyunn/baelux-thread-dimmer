@@ -396,6 +396,7 @@ void WorkInit(otInstance *aInstance)
     UTIL_SEQ_RegTask( TASK_WAKEUP_ENCODER, UTIL_SEQ_RFU, WorkWakeupEncoder);
     HW_TS_Create(CFG_TIM_USER_ID_ISR, &led_timer_id, hw_ts_SingleShot, led_timer);
     HW_TS_Create(CFG_TIM_USER_ID_ISR, &sensor_sleep_timer_id, hw_ts_SingleShot, sensor_sleep_timer);
+    HW_TS_Start(sensor_sleep_timer_id, TIMER_INTERVAL_SEC(2));
 
     HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 }

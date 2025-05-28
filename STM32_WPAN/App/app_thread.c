@@ -353,6 +353,7 @@ static void APP_THREAD_DeviceConfig(void)
   }
 
   /* USER CODE BEGIN DEVICECONFIG */
+  otLinkSetPollPeriod(NULL, 60*THREAD_LINK_POLL_PERIOD_MS);
 
   /* USER CODE END DEVICECONFIG */
 }
@@ -791,7 +792,7 @@ void APP_THREAD_Init_UART_CLI(void)
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 #else
 #if (CFG_FULL_LOW_POWER == 0)
-  MX_USART1_UART_Init();
+  MX_LPUART1_UART_Init();
   HW_UART_Receive_IT(CFG_CLI_UART, aRxBuffer, 1, RxCpltCallback);
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
